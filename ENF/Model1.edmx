@@ -1,0 +1,286 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="JEnriquezCRUDClientesModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Cadenas">
+          <Key>
+            <PropertyRef Name="IdCadena" />
+          </Key>
+          <Property Name="IdCadena" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Nombre" Type="varchar" MaxLength="255" />
+          <Property Name="Activo" Type="bit" />
+        </EntityType>
+        <EntityType Name="Clientes">
+          <Key>
+            <PropertyRef Name="IdCliente" />
+          </Key>
+          <Property Name="IdCliente" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IdCadena" Type="int" />
+          <Property Name="Sucursal" Type="varchar" MaxLength="255" />
+          <Property Name="InicioContrato" Type="date" />
+          <Property Name="Activo" Type="bit" />
+          <Property Name="FechaActualizacion" Type="datetime" />
+          <Property Name="Imagen" Type="varbinary(max)" />
+          <Property Name="No_Cliente" Type="int" />
+        </EntityType>
+        <Association Name="FK_Cadenas">
+          <End Role="Cadenas" Type="Self.Cadenas" Multiplicity="0..1" />
+          <End Role="Clientes" Type="Self.Clientes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Cadenas">
+              <PropertyRef Name="IdCadena" />
+            </Principal>
+            <Dependent Role="Clientes">
+              <PropertyRef Name="IdCadena" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Function Name="CadenasGetAll" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="ClienteAdd" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="IdCadena" Type="int" Mode="In" />
+          <Parameter Name="Sucursal" Type="varchar" Mode="In" />
+          <Parameter Name="InicioContrato" Type="date" Mode="In" />
+          <Parameter Name="Activo" Type="bit" Mode="In" />
+          <Parameter Name="FechaActualizacion" Type="datetime" Mode="In" />
+          <Parameter Name="Imagen" Type="varbinary(max)" Mode="In" />
+          <Parameter Name="No_Cliente" Type="int" Mode="In" />
+        </Function>
+        <Function Name="ClienteChangeStatus" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Activo" Type="bit" Mode="In" />
+          <Parameter Name="IdCliente" Type="int" Mode="In" />
+        </Function>
+        <Function Name="ClienteDelete" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="IdCliente" Type="int" Mode="In" />
+        </Function>
+        <Function Name="ClienteGetAll" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="ClienteGetById" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="IdCliente" Type="int" Mode="In" />
+        </Function>
+        <Function Name="ClienteUpdate" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="IdCliente" Type="int" Mode="In" />
+          <Parameter Name="IdCadena" Type="int" Mode="In" />
+          <Parameter Name="Sucursal" Type="varchar" Mode="In" />
+          <Parameter Name="InicioContrato" Type="date" Mode="In" />
+          <Parameter Name="Activo" Type="bit" Mode="In" />
+          <Parameter Name="FechaActualizacion" Type="datetime" Mode="In" />
+          <Parameter Name="Imagen" Type="varbinary(max)" Mode="In" />
+          <Parameter Name="No_Cliente" Type="int" Mode="In" />
+        </Function>
+        <EntityContainer Name="JEnriquezCRUDClientesModelStoreContainer">
+          <EntitySet Name="Cadenas" EntityType="Self.Cadenas" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Clientes" EntityType="Self.Clientes" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Cadenas" Association="Self.FK_Cadenas">
+            <End Role="Cadenas" EntitySet="Cadenas" />
+            <End Role="Clientes" EntitySet="Clientes" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="JEnriquezCRUDClientesModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Cadena">
+          <Key>
+            <PropertyRef Name="IdCadena" />
+          </Key>
+          <Property Name="IdCadena" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Nombre" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Activo" Type="Boolean" />
+          <NavigationProperty Name="Clientes" Relationship="Self.FK_Cadenas" FromRole="Cadenas" ToRole="Clientes" />
+        </EntityType>
+        <EntityType Name="Cliente">
+          <Key>
+            <PropertyRef Name="IdCliente" />
+          </Key>
+          <Property Name="IdCliente" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="No_Cliente" Type="Int32" />
+          <Property Name="IdCadena" Type="Int32" />
+          <Property Name="Sucursal" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="InicioContrato" Type="DateTime" Precision="0" />
+          <Property Name="Activo" Type="Boolean" />
+          <Property Name="FechaActualizacion" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Cadena" Relationship="Self.FK_Cadenas" FromRole="Clientes" ToRole="Cadenas" />
+          <Property Name="Imagen" Type="Binary" MaxLength="Max" FixedLength="false" />
+        </EntityType>
+        <Association Name="FK_Cadenas">
+          <End Role="Cadenas" Type="Self.Cadena" Multiplicity="0..1" />
+          <End Role="Clientes" Type="Self.Cliente" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Cadenas">
+              <PropertyRef Name="IdCadena" />
+            </Principal>
+            <Dependent Role="Clientes">
+              <PropertyRef Name="IdCadena" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="JEnriquezCRUDClientesEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Cadenas" EntityType="Self.Cadena" />
+          <EntitySet Name="Clientes" EntityType="Self.Cliente" />
+          <AssociationSet Name="FK_Cadenas" Association="Self.FK_Cadenas">
+            <End Role="Cadenas" EntitySet="Cadenas" />
+            <End Role="Clientes" EntitySet="Clientes" />
+          </AssociationSet>
+          <FunctionImport Name="CadenasGetAll" ReturnType="Collection(JEnriquezCRUDClientesModel.CadenasGetAll_Result)" />
+          <FunctionImport Name="ClienteAdd">
+            <Parameter Name="IdCadena" Mode="In" Type="Int32" />
+            <Parameter Name="Sucursal" Mode="In" Type="String" />
+            <Parameter Name="InicioContrato" Mode="In" Type="DateTime" />
+            <Parameter Name="Activo" Mode="In" Type="Boolean" />
+            <Parameter Name="FechaActualizacion" Mode="In" Type="DateTime" />
+            <Parameter Name="Imagen" Mode="In" Type="Binary" />
+            <Parameter Name="No_Cliente" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="ClienteDelete">
+          <Parameter Name="IdCliente" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="ClienteGetAll" ReturnType="Collection(JEnriquezCRUDClientesModel.ClienteGetAll_Result1)" />
+          <FunctionImport Name="ClienteGetById" ReturnType="Collection(JEnriquezCRUDClientesModel.ClienteGetById_Result)">
+          <Parameter Name="IdCliente" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="ClienteUpdate">
+            <Parameter Name="IdCliente" Mode="In" Type="Int32" />
+            <Parameter Name="IdCadena" Mode="In" Type="Int32" />
+            <Parameter Name="Sucursal" Mode="In" Type="String" />
+            <Parameter Name="InicioContrato" Mode="In" Type="DateTime" />
+            <Parameter Name="Activo" Mode="In" Type="Boolean" />
+            <Parameter Name="FechaActualizacion" Mode="In" Type="DateTime" />
+            <Parameter Name="Imagen" Mode="In" Type="Binary" />
+            <Parameter Name="No_Cliente" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="ClienteChangeStatus">
+            <Parameter Name="Activo" Mode="In" Type="Boolean" />
+            <Parameter Name="IdCliente" Mode="In" Type="Int32" />
+          </FunctionImport>
+        </EntityContainer>
+        <ComplexType Name="CadenasGetAll_Result">
+          <Property Type="Int32" Name="IdCadena" Nullable="false" />
+          <Property Type="String" Name="Nombre" Nullable="true" MaxLength="255" />
+          <Property Type="Boolean" Name="Activo" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="ClienteGetAll_Result">
+          <Property Type="Int32" Name="IdCliente" Nullable="false" />
+          <Property Type="Int32" Name="No_Cliente" Nullable="true" />
+          <Property Type="Int32" Name="IdCadena" Nullable="false" />
+          <Property Type="String" Name="Nombre" Nullable="true" MaxLength="255" />
+          <Property Type="String" Name="Sucursal" Nullable="true" MaxLength="255" />
+          <Property Type="DateTime" Name="InicioContrato" Nullable="true" />
+          <Property Type="Boolean" Name="Activo" Nullable="true" />
+          <Property Type="DateTime" Name="FechaActualizacion" Nullable="true" Precision="23" />
+        </ComplexType>
+        <ComplexType Name="ClienteGetAll_Result1">
+          <Property Type="Int32" Name="IdCliente" Nullable="false" />
+          <Property Type="Int32" Name="IdCadena" Nullable="false" />
+          <Property Type="String" Name="Nombre" Nullable="true" MaxLength="255" />
+          <Property Type="String" Name="Sucursal" Nullable="true" MaxLength="255" />
+          <Property Type="DateTime" Name="InicioContrato" Nullable="true" />
+          <Property Type="Boolean" Name="Activo" Nullable="true" />
+          <Property Type="DateTime" Name="FechaActualizacion" Nullable="true" Precision="23" />
+          <Property Type="Binary" Name="Imagen" Nullable="true" />
+          <Property Type="Int32" Name="No_Cliente" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="ClienteGetById_Result">
+          <Property Type="Int32" Name="IdCadena" Nullable="true" />
+          <Property Type="String" Name="Sucursal" Nullable="true" MaxLength="255" />
+          <Property Type="DateTime" Name="InicioContrato" Nullable="true" />
+          <Property Type="Boolean" Name="Activo" Nullable="true" />
+          <Property Type="DateTime" Name="FechaActualizacion" Nullable="true" Precision="23" />
+          <Property Type="Int32" Name="No_Cliente" Nullable="true" />
+          <Property Type="Binary" Name="Imagen" Nullable="true" />
+        </ComplexType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="JEnriquezCRUDClientesModelStoreContainer" CdmEntityContainer="JEnriquezCRUDClientesEntities">
+          <EntitySetMapping Name="Cadenas">
+            <EntityTypeMapping TypeName="JEnriquezCRUDClientesModel.Cadena">
+              <MappingFragment StoreEntitySet="Cadenas">
+                <ScalarProperty Name="IdCadena" ColumnName="IdCadena" />
+                <ScalarProperty Name="Nombre" ColumnName="Nombre" />
+                <ScalarProperty Name="Activo" ColumnName="Activo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Clientes">
+            <EntityTypeMapping TypeName="JEnriquezCRUDClientesModel.Cliente">
+              <MappingFragment StoreEntitySet="Clientes">
+                <ScalarProperty Name="Imagen" ColumnName="Imagen" />
+                <ScalarProperty Name="IdCliente" ColumnName="IdCliente" />
+                <ScalarProperty Name="No_Cliente" ColumnName="No_Cliente" />
+                <ScalarProperty Name="IdCadena" ColumnName="IdCadena" />
+                <ScalarProperty Name="Sucursal" ColumnName="Sucursal" />
+                <ScalarProperty Name="InicioContrato" ColumnName="InicioContrato" />
+                <ScalarProperty Name="Activo" ColumnName="Activo" />
+                <ScalarProperty Name="FechaActualizacion" ColumnName="FechaActualizacion" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="CadenasGetAll" FunctionName="JEnriquezCRUDClientesModel.Store.CadenasGetAll">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="JEnriquezCRUDClientesModel.CadenasGetAll_Result">
+                <ScalarProperty Name="IdCadena" ColumnName="IdCadena" />
+                <ScalarProperty Name="Nombre" ColumnName="Nombre" />
+                <ScalarProperty Name="Activo" ColumnName="Activo" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="ClienteAdd" FunctionName="JEnriquezCRUDClientesModel.Store.ClienteAdd" />
+          <FunctionImportMapping FunctionImportName="ClienteDelete" FunctionName="JEnriquezCRUDClientesModel.Store.ClienteDelete" />
+          <FunctionImportMapping FunctionImportName="ClienteGetAll" FunctionName="JEnriquezCRUDClientesModel.Store.ClienteGetAll">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="JEnriquezCRUDClientesModel.ClienteGetAll_Result1">
+                <ScalarProperty Name="IdCliente" ColumnName="IdCliente" />
+                <ScalarProperty Name="IdCadena" ColumnName="IdCadena" />
+                <ScalarProperty Name="Nombre" ColumnName="Nombre" />
+                <ScalarProperty Name="Sucursal" ColumnName="Sucursal" />
+                <ScalarProperty Name="InicioContrato" ColumnName="InicioContrato" />
+                <ScalarProperty Name="Activo" ColumnName="Activo" />
+                <ScalarProperty Name="FechaActualizacion" ColumnName="FechaActualizacion" />
+                <ScalarProperty Name="Imagen" ColumnName="Imagen" />
+                <ScalarProperty Name="No_Cliente" ColumnName="No_Cliente" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="ClienteGetById" FunctionName="JEnriquezCRUDClientesModel.Store.ClienteGetById">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="JEnriquezCRUDClientesModel.ClienteGetById_Result">
+                <ScalarProperty Name="IdCadena" ColumnName="IdCadena" />
+                <ScalarProperty Name="Sucursal" ColumnName="Sucursal" />
+                <ScalarProperty Name="InicioContrato" ColumnName="InicioContrato" />
+                <ScalarProperty Name="Activo" ColumnName="Activo" />
+                <ScalarProperty Name="FechaActualizacion" ColumnName="FechaActualizacion" />
+                <ScalarProperty Name="No_Cliente" ColumnName="No_Cliente" />
+                <ScalarProperty Name="Imagen" ColumnName="Imagen" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="ClienteUpdate" FunctionName="JEnriquezCRUDClientesModel.Store.ClienteUpdate" />
+          <FunctionImportMapping FunctionImportName="ClienteChangeStatus" FunctionName="JEnriquezCRUDClientesModel.Store.ClienteChangeStatus" />
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
