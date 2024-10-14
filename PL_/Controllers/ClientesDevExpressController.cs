@@ -1,5 +1,4 @@
-﻿using DevExpress.DataProcessing.InMemoryDataProcessor.GraphGenerator;
-using ML;
+﻿    using ML;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,7 +8,7 @@ using System.Web.Mvc;
 
 namespace PL_.Controllers
 {
-    public class ClientesController : Controller
+    public class ClientesDevExpressController : Controller
     {
         // GET: Cliente
         public ActionResult GetAll()
@@ -39,7 +38,7 @@ namespace PL_.Controllers
             {
                 cliente.Imagen = Convert.FromBase64String(cliente.ImagenBase64);
             }
-            ML.Result result = BL.Clientes.AddLINQ(cliente);
+            ML.Result result = BL.Clientes.Add(cliente);
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
@@ -69,15 +68,6 @@ namespace PL_.Controllers
         public JsonResult GetClienteById(int idCliente)
         {
             ML.Result result = BL.Clientes.GetByILINQ(idCliente);
-            ML.Cliente cliente = new ML.Cliente();
-            cliente = (ML.Cliente)result.Object;
-            if(cliente.Imagen != null)
-            {
-                cliente.ImagenBase64 = Convert.ToBase64String(cliente.Imagen);
-            }
-
-            result.Object = cliente;
-
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 

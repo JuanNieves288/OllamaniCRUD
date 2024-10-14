@@ -14,14 +14,14 @@ namespace BL
     public class Clientes
     {
 
-        public static ML.Result ChangeStatus(bool Status, int IdCandidato)
+        public static ML.Result ChangeStatus(bool Activo, int IdCandidato)
         {
             ML.Result result = new ML.Result();
             try
             {
                 using (ENF.JEnriquezCRUDClientesEntities context = new ENF.JEnriquezCRUDClientesEntities())
                 {
-                    context.ClienteChangeStatus(Status, IdCandidato);
+                    context.ClienteChangeStatus(Activo, IdCandidato);
 
                     result.Success = true;
                 }
@@ -262,7 +262,8 @@ namespace BL
                                 {
                                     IdCadena = Convert.ToInt32(item.IdCadena),
                                     Nombre = item.Nombre
-                                }
+                                },
+                                 Imagen = item.Imagen
                             };
 
                             result.Objects.Add(data);
@@ -593,20 +594,19 @@ namespace BL
                         Activo = cliente.Activo,
                         FechaActualizacion = DateTime.Now,
                         Imagen = cliente.Imagen,
-                        Cadena = new ENF.Cadena
-                        {
-                            IdCadena = cliente.Cadena.IdCadena,
-
-                        }
+                        IdCadena = cliente.Cadena.IdCadena
                     };
 
                     context.Clientes.Add(nueva);
                     int filasAfectadas = context.SaveChanges();
 
-                    result.Success = filasAfectadas > 0;
-                    if (!result.Success)
+                    if (filasAfectadas>0)
                     {
-                        result.ErrorMessage = "No se pudo agregar.";
+                        result.Success = true;
+                    } else
+                    {
+                        result.Success = false;
+                        result.ErrorMessage = "Error al insertar";
                     }
                 }
             }

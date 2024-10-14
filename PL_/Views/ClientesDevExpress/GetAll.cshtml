@@ -1,0 +1,327 @@
+﻿@using DevExpress.Web.Mvc.UI
+
+@model ML.Cliente
+
+@{
+    ViewBag.Title = "GetAll";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@*<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>*@
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+
+<h2>Cliente</h2>
+<button class="btn btn-success" data-toggle="modal" data-target="#modalCliente" onclick="limpiarCampos()">Agregar</button>
+
+<div class="row">
+    <div class="col-12">
+        @Html.DevExpress().GridView(settings =>
+   {
+       settings.Name = "gridClientes";
+       settings.CallbackRouteValues = new { Controller = "Clientes", Action = "GetAll" };
+
+       settings.Columns.Add("No_Cliente", "Número de Cliente");
+       settings.Columns.Add("Cadena.Nombre", "Cadena");
+       settings.Columns.Add("Sucursal");
+       settings.Columns.Add("InicioContrato", "Fecha de Contrato");
+       settings.Columns.Add(column =>
+       {
+           column.FieldName = "Activo";
+           column.Caption = "Estatus";
+           column.EditorProperties().CheckBox(checkboxSettings =>
+           {
+               checkboxSettings.ClientSideEvents.CheckedChanged = "function(s, e) { ChangeStatus(s, e); }";
+           });
+       });
+
+       //if (Model.Clientes != null)
+       //{
+       //    foreach (ML.Cliente cliente in Model.Clientes)
+       //    {
+       //        Html.DevExpress().Button(btnSettings =>
+       //        {
+       //            btnSettings.Name = "button_";
+       //            btnSettings.Text = "Eliminar";
+       //            btnSettings.Attributes.Add("onclick", "Eliminar(" + cliente.IdCliente + ")");
+       //        }).GetHtml();
+       //    }
+       //}
+
+
+       settings.SettingsBehavior.AllowFocusedRow = true;
+       settings.SettingsBehavior.AllowSort = true;
+       settings.SettingsPager.PageSize = 10;
+
+   }).Bind(Model.Clientes).GetHtml()
+    </div>
+</div>
+
+
+
+<div id="modalCliente" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Cliente</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                @using (Html.BeginForm("GetAll", "Clientes", FormMethod.Post, new { @class = "form-horizontal", @enctype = "multipart/form-data", @id = "formCliente" }))
+                {
+                    @Html.HiddenFor(model => model.IdCliente)
+                    @Html.HiddenFor(model => model.Imagen)
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Sucursal)
+                        @Html.DevExpress().TextBox(settings =>
+                        {
+                            settings.Name = "Sucursal";
+                            settings.Properties.NullText = "Sucursal";
+                        }).GetHtml()
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.No_Cliente)
+                        @Html.DevExpress().TextBox(settings =>
+                        {
+                            settings.Name = "No_Cliente";
+                            settings.Properties.NullText = "Número de Cliente";
+                        }).GetHtml()
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.InicioContrato)
+                        @Html.DevExpress().DateEdit(settings =>
+                        {
+                            settings.Name = "InicioContrato";
+                            settings.Properties.NullText = "Fecha de Contrato";
+                        }).GetHtml()
+                    </div>
+                    <div class="form-group">
+                        @Html.Label("Estatus")
+                        @Html.DevExpress().RadioButtonList(settings =>
+                        {
+                            settings.Name = "Activo";
+                            settings.Properties.Items.Add("Activo", true);
+                            settings.Properties.Items.Add("Inactivo", false);
+                        }).GetHtml()
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Cadena.IdCadena, new { @class = "control-label" })
+                        @Html.DropDownListFor(model => model.Cadena.IdCadena, new SelectList(Model.Cadena.Cadenas, "IdCadena", "Nombre"), "Selecciona una opción", new { @class = "form-control", id = "IdCadena" })
+
+                    </div>
+
+                    <div class="text-center">
+                        <input class="form-control" type="file" id="imagen" name="imagen" accept="image/*" onchange="visualizarImagen(this);convertToBase64(this);" />
+                        <img src="https://www.ciitaveracruz.ipn.mx/assets/files/ciitaveracruz/img/Contacto/img-contacto-telefonico.png" width="100" id="img" />
+                    </div>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-success" onclick="Guardar()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+            jQuery(function ($) {
+                $('.datepicker').datepicker({
+                    dateFormat: 'dd/mm/yy',
+                });
+            });
+
+              $(function() {
+                  $("#selectBox").dxSelectBox({
+
+            });
+          });
+
+
+    let imagenBase64 = null;
+
+        function Guardar() {
+        var IdCliente = $('#IdCliente').val(); 
+        var No_Cliente = $('input[name="No_Cliente"]').val(); 
+        var IdCadena = $('#IdCadena').val();
+        var Sucursal = $('input[name="Sucursal"]').val(); 
+        var InicioContrato = $('input[name="InicioContrato"]').val(); 
+        var Activo = $('input[name="Activo"]:checked').val() === "Activo"; 
+
+        if (typeof imagenBase64 === 'undefined') {
+            console.error("La imagen no se ha convertido a Base64.");
+            return; 
+        }
+
+        const actionUrl = IdCliente ? '@Url.Action("Update", "Clientes")' : '@Url.Action("Add", "Clientes")';
+
+        Swal.fire({
+            title: "¿Deseas guardar los cambios?",
+            showCancelButton: true,
+            confirmButtonText: "Guardar",
+            cancelButtonText: "Cerrar"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: actionUrl,
+                    dataType: 'json',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        IdCliente: IdCliente,
+                        No_Cliente: No_Cliente,
+                        Cadena: { IdCadena: IdCadena },
+                        Sucursal: Sucursal,
+                        InicioContrato: InicioContrato,
+                        Activo: Activo,
+                        ImagenBase64: imagenBase64,
+                    }),
+                    success: function (result) {
+                        if (result.Success) {
+                            Swal.fire("¡Éxito!", "Los datos han sido guardados.", "success").then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire("Error", result.ErrorMessage, "error");
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error en AJAX:", xhr.responseText);
+                        Swal.fire("Error", "Ocurrió un error en la solicitud: " + error, "error");
+                    }
+                });
+            }
+        });
+    }
+
+            function limpiarCampos() {
+                $('#IdCliente').val('');
+                $('#No_Cliente').val('');
+                $('#IdCadena').val('');
+                $('#Sucursal').val('');
+                $('#InicioContrato').val('');
+                $('#Activo').prop('checked', false);
+                $('#Inactivo').prop('checked', false);
+                $('#img').attr('src', 'https://www.ciitaveracruz.ipn.mx/assets/files/ciitaveracruz/img/Contacto/img-contacto-telefonico.png');
+                imagenBase64 = null;
+            }
+
+            function convertToBase64(fileInput) {
+                const file = fileInput.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onloadend = function () {
+                        imagenBase64 = reader.result.split(',')[1];
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+
+            function visualizarImagen(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        $('#img').attr('src', e.target.result);
+                    }
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+        function obtenerCliente(idCliente) {
+            $.ajax({
+                url: '@Url.Action("GetClienteById", "Clientes")',
+                type: 'GET',
+                data: { idCliente: idCliente },
+                success: function(result) {
+                    if (result.Success) {
+                        $('#No_Cliente').val(result.Object.No_Cliente);
+                        $('#Sucursal').val(result.Object.Sucursal);
+                        $('#InicioContrato').val(result.Object.InicioContrato);
+                        $('#IdCadena').val(result.Object.Cadena.IdCadena);
+                        $('#Activo').prop('checked', result.Object.Activo);
+                        $('#Inactivo').prop('checked', !result.Object.Activo);
+                        $('#IdCliente').val(result.Object.IdCliente);
+
+                        if (result.Object.Imagen) {
+                            $('#img').attr('src', 'data:image/png;base64,' + result.Object.Imagen);
+                        } else {
+                            $('#img').attr('src', 'https://www.ciitaveracruz.ipn.mx/assets/files/ciitaveracruz/img/Contacto/img-contacto-telefonico.png');
+                        }
+
+                        $('#modalCliente').modal('show');
+                    } else {
+                        alert('No se encontraron datos para el cliente.');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    alert('Ocurrió un error al obtener los datos: ' + error);
+                }
+            });
+        }
+
+
+
+            function Eliminar(idCliente) {
+                Swal.fire({
+                    title: '¿Deseas eliminar el cliente?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'No, cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '@Url.Action("DeleteEF", "Clientes")',
+                            type: 'POST',
+                            dataType: 'json',
+                            data: { idCliente: idCliente },
+                            success: function(result) {
+                                if (result.Success) {
+                                    Swal.fire('¡Se eliminó correctamente!', '', 'success').then(() => {
+                                        location.reload();
+                                    });
+                                } else {
+                                    Swal.fire('Ocurrió un error', result.ErrorMessage, 'error');
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                Swal.fire('Ocurrió un error en la solicitud', error, 'error');
+                            }
+                        });
+                    }
+                });
+            }
+
+
+            function ChangeStatus(i, IdCliente) {
+            var newStatus = i.checked;
+            console.log("Changing status for IdCliente: " + IdCliente + ", Activo: " + newStatus);
+
+            $.ajax({
+                url: '@Url.Action("ChangeStatus", "Clientes")',
+                datatype: 'json',
+                type: 'POST',
+                data: { Activo: newStatus, IdCliente: IdCliente },
+                success: function (result) {
+                    if (result.Success) {
+                        Swal.fire('Éxito', 'Estado actualizado correctamente.', 'success');
+                    } else {
+                        Swal.fire('Error', result.ErrorMessage, 'error');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert('Ocurrió un error: ' + error);
+                }
+            });
+        }
+
+</script>
+

@@ -1,11 +1,41 @@
-﻿<!DOCTYPE html>
+﻿
+@using DevExpress.Web.Mvc.UI
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - My ASP.NET Application</title>
     @Styles.Render("~/Content/css")
+    @*@Scripts.Render("~/bundles/jquery")*@
+
     @Scripts.Render("~/bundles/modernizr")
+    @*<link rel="stylesheet" href="https://cdn3.devexpress.com/jslib/21.1.5/css/dx.light.css" />
+        <script src="https://cdn3.devexpress.com/jslib/21.1.5/js/dx.all.js"></script>*@
+
+    <script src="@Url.Content("~/Scripts/jquery-3.4.1.min.js")" type="text/javascript"></script>
+    <!-- The DevExpress ASP.NET MVC Extensions' scripts -->
+    @*@Html.DevExpress().GetScripts(
+                new Script { ExtensionSuite = ExtensionSuite.All }
+            )*@
+
+    @*@Html.DevExpress().GetStyleSheets(
+                //new StyleSheet { ExtensionSuite = ExtensionSuite.NavigationAndLayout },
+                //new StyleSheet { ExtensionSuite = ExtensionSuite.Diagram },
+                //new StyleSheet { ExtensionSuite = ExtensionSuite.Gantt },
+                //new StyleSheet { ExtensionSuite = ExtensionSuite.Editors },
+                //new StyleSheet { ExtensionSuite = ExtensionSuite.HtmlEditor },
+                //new StyleSheet { ExtensionSuite = ExtensionSuite.GridView },
+                //new StyleSheet { ExtensionSuite = ExtensionSuite.PivotGrid },
+                //new StyleSheet { ExtensionSuite = ExtensionSuite.Chart },
+                //new StyleSheet { ExtensionSuite = ExtensionSuite.Report },
+                //new StyleSheet { ExtensionSuite = ExtensionSuite.Scheduler },
+                //new StyleSheet { ExtensionSuite = ExtensionSuite.TreeList },
+                //new StyleSheet { ExtensionSuite = ExtensionSuite.Spreadsheet },
+                //new StyleSheet { ExtensionSuite = ExtensionSuite.RichEdit },
+                new StyleSheet { ExtensionSuite = ExtensionSuite.All }
+            )*@
+
 </head>
 <body>
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark">
@@ -18,6 +48,7 @@
             <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
                 <ul class="navbar-nav flex-grow-1">
                     <li>@Html.ActionLink("Cliente", "GetAll", "Clientes", new { area = "" }, new { @class = "nav-link" })</li>
+                    <li>@Html.ActionLink("ClientesDevExpress", "GetAll", "ClientesDevExpress", new { area = "" }, new { @class = "nav-link" })</li>
                 </ul>
             </div>
         </div>
@@ -30,7 +61,6 @@
         </footer>
     </div>
 
-    @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
 </body>

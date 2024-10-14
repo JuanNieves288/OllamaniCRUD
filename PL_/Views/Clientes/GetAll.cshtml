@@ -10,14 +10,23 @@
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 
+<div class="rows">
+    <div class="col-12">
+        <h2>Control de Clientes</h2>
+    </div>
+</div>
 
-<h2>Cliente</h2>
+<hr />
+<div class="row">
+    <div class="col-1 offset-11">
+        <button class="btn btn-success" data-toggle="modal" data-target="#modalCliente" onclick="prepararModal('agregar')">Agregar</button>
+    </div>
+</div>
 
-<button class="btn btn-success" data-toggle="modal" data-target="#modalAgregar">Agregar</button>
+<hr />
 <div class="row">
     <div class="col-12">
         @if (Model.Clientes != null && Model.Clientes.Count > 0)
@@ -40,28 +49,33 @@
                     {
                         <tr>
                             <td>
-                                @if (cliente.Imagen == null || cliente.Imagen.Length == 0)
-                                {
-                                    <img src="https://www.ciitaveracruz.ipn.mx/assets/files/ciitaveracruz/img/Contacto/img-contacto-telefonico.png" width="100" id="imgFoto" />
-                                }
-                                else
-                                {
-                                    <img src="data:image/*;base64,@Convert.ToBase64String(cliente.Imagen)" width="100" id="imgFoto" />
-
-                                }
+                                <img src="@((cliente.Imagen == null || cliente.Imagen.Length == 0) ? "https://www.ciitaveracruz.ipn.mx/assets/files/ciitaveracruz/img/Contacto/img-contacto-telefonico.png" : "data:image/*;base64," + Convert.ToBase64String(cliente.Imagen))" width="100" />
                             </td>
                             <td class="text-center">@cliente.No_Cliente</td>
                             <td class="text-center">@cliente.Cadena.Nombre</td>
                             <td class="text-center">@cliente.Sucursal</td>
                             <td class="text-center">@cliente.InicioContrato</td>
-                            <td class="text-center">@((cliente.Activo) ? "Activo" : "Inactivo")</td>
+                            <td class="text-center">
+                                @if (cliente.Activo)
+                                {
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="flexSwitchCheck_@cliente.IdCliente" checked="@cliente.Activo" onchange="ChangeStatus(this, @cliente.IdCliente)">
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="flexSwitchCheck_@cliente.IdCliente" onchange="ChangeStatus(this, @cliente.IdCliente)">
+                                    </div>
+                                }
+                            </td>
                             <td>
-                                <button class="btn btn-outline-dark mb-1" onclick="Eliminar(@cliente.IdCliente)">
-                                    <i class="bi bi-brush">Eliminar</i>
+                                <button class="btn btn-danger mb-1" onclick="Eliminar(@cliente.IdCliente)">
+                                    <i class="bi bi-trash">Eliminar</i>
                                 </button>
                             </td>
                             <td>
-                                <button class="btn btn-outline-dark mb-1" onclick="obtenerCliente(@cliente.IdCliente);">
+                                <button class="btn btn-outline-dark mb-1" onclick="obtenerCliente(@cliente.IdCliente)">
                                     <i class="bi bi-brush">Actualizar</i>
                                 </button>
                             </td>
@@ -73,46 +87,45 @@
     </div>
 </div>
 
-<div id="modalAgregar" class="modal" tabindex="-1" role="dialog">
+<div id="modalCliente" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Agregar Cliente</h5>
+                <h5 class="modal-title">Cliente</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                @using (Html.BeginForm("GetAll", "Clientes", FormMethod.Post, new { @class = "form-horizontal", @enctype = "multipart/form-data", @id = "formAgregar" }))
+                @using (Html.BeginForm("GetAll", "Clientes", FormMethod.Post, new { @class = "form-horizontal", @enctype = "multipart/form-data", @id = "formCliente" }))
                 {
                     @Html.HiddenFor(model => model.IdCliente)
                     @Html.HiddenFor(model => model.Imagen)
-                    <input type="hidden" id="IdCliente" name="IdCliente" />
 
                     <div class="form-group">
                         @Html.LabelFor(model => model.Sucursal)
-                        @Html.TextBoxFor(model => model.Sucursal, new { @class = "form-control", maxlength = "100", required = "required" })
+                        @Html.TextBoxFor(model => model.Sucursal, new { @id = "Sucursal", @class = "form-control", maxlength = "100", required = "required" })
                     </div>
                     <div class="form-group">
                         @Html.LabelFor(model => model.No_Cliente)
-                        @Html.TextBoxFor(model => model.No_Cliente, new { @class = "form-control", required = "required" })
+                        @Html.TextBoxFor(model => model.No_Cliente, new { @id = "No_Cliente", @class = "form-control", required = "required" })
                     </div>
                     <div class="form-group">
                         @Html.LabelFor(model => model.InicioContrato)
-                        @Html.TextBoxFor(model => model.InicioContrato, new { @class = "form-control datepicker", required = "required" })
+                        @Html.TextBoxFor(model => model.InicioContrato, new { @id = "InicioContrato", @class = "form-control datepicker", required = "required" })
                     </div>
                     <div class="form-group">
                         @Html.Label("Estatus")
                         <div>
-                            @Html.RadioButtonFor(model => model.Activo, true, new { id = "ActivoAgregar", required = "required" })
-                            <label for="ActivoAgregar">Activo</label>
-                            @Html.RadioButtonFor(model => model.Activo, false, new { id = "InactivoAgregar", required = "required" })
-                            <label for="InactivoAgregar">Inactivo</label>
+                            @Html.RadioButtonFor(model => model.Activo, true, new { id = "Activo", required = "required" })
+                            <label for="Activo">Activo</label>
+                            @Html.RadioButtonFor(model => model.Activo, false, new { id = "Inactivo", required = "required" })
+                            <label for="Inactivo">Inactivo</label>
                         </div>
                     </div>
                     <div class="form-group">
                         @Html.LabelFor(model => model.Cadena.IdCadena)
-                        @Html.DropDownListFor(model => model.Cadena.IdCadena, new SelectList(Model.Cadena.Cadenas, "IdCadena", "Nombre"), "Selecciona una opción", new { @class = "form-control", id = "IdCadenaAgregar", required = "required" })
+                        @Html.DropDownListFor(model => model.Cadena.IdCadena, new SelectList(Model.Cadena.Cadenas, "IdCadena", "Nombre"), "Selecciona una opción", new { @id = "IdCadena", @class = "form-control", required = "required" })
                     </div>
                     <div class="text-center">
                         <input class="form-control" type="file" id="imagen" name="imagen" accept="image/*" onchange="visualizarImagen(this);convertToBase64(this);" />
@@ -129,254 +142,128 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-success" onclick="Agregar()">Agregar</button>
+                <button type="button" class="btn btn-success" onclick="Guardar()">Guardar</button>
             </div>
         </div>
     </div>
 </div>
 
-<div id="modalActualizar" class="modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Actualizar Cliente</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                @using (Html.BeginForm("GetAll", "Clientes", FormMethod.Post, new { @class = "form-horizontal", @enctype = "multipart/form-data", @id = "formActualizar" }))
-                {
-                    @Html.HiddenFor(model => model.IdCliente)
-                    @Html.HiddenFor(model => model.Imagen)
-                    <input type="hidden" id="IdCliente" name="IdCliente" />
 
-                    <div class="form-group">
-                        @Html.LabelFor(model => model.Sucursal)
-                        @Html.TextBoxFor(model => model.Sucursal, new { @id = "SucursalActualizar", @class = "form-control", maxlength = "100", required = "required" })
-                    </div>
-                    <div class="form-group">
-                        @Html.LabelFor(model => model.No_Cliente)
-                        @Html.TextBoxFor(model => model.No_Cliente, new { @id = "No_ClienteActualizar", @class = "form-control", required = "required" })
-                    </div>
-                    <div class="form-group">
-                        @Html.LabelFor(model => model.InicioContrato)
-                        @Html.TextBoxFor(model => model.InicioContrato, new { @id = "InicioContratoActualizar", @class = "form-control datepicker", required = "required" })
-                    </div>
-                    <div class="form-group">
-                        @Html.Label("Estatus")
-                        <div>
-                            @Html.RadioButtonFor(model => model.Activo, true, new { id = "ActivoActualizar", required = "required" })
-                            <label for="ActivoActualizar">Activo</label>
-                            @Html.RadioButtonFor(model => model.Activo, false, new { id = "InactivoActualizar", required = "required" })
-                            <label for="InactivoActualizar">Inactivo</label>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        @Html.LabelFor(model => model.Cadena.IdCadena)
-                        @Html.DropDownListFor(model => model.Cadena.IdCadena, new SelectList(Model.Cadena.Cadenas, "IdCadena", "Nombre"), "Selecciona una opción", new { @id = "IdCadenaActualizar", @class = "form-control", required = "required" })
-                    </div>
-                    <div class="text-center">
-                        <input class="form-control" type="file" id="imagen" name="imagen" accept="image/*" onchange="visualizarImagen(this);convertToBase64(this);" />
-                        @if (Model.Imagen == null)
-                        {
-                            <img src="https://www.ciitaveracruz.ipn.mx/assets/files/ciitaveracruz/img/Contacto/img-contacto-telefonico.png" width="100" id="img" />
-                        }
-                        else
-                        {
-                            <img src="data:image/*;base64,@Model.Imagen" width="100" id="img" />
-                        }
-                    </div>
-                }
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-success" onclick="Actualizar()">Actualizar</button>
-            </div>
-        </div>
-    </div>
-</div>
+
+
 
 @Scripts.Render("~/bungles/jquery")
 <script type="text/javascript">
-    jQuery(function ($) {
-        $('.datepicker').datepicker({
-            dateFormat: 'dd/mm/yy',
+        jQuery(function ($) {
+            $('.datepicker').datepicker({
+                dateFormat: 'dd/mm/yy',
+            });
         });
-    });
 
 
-let imagenBase64 = null;
+    let imagenBase64 = null; 
 
-function Agregar() {
-    var No_Cliente = $('#No_Cliente').val();
-    var IdCadena = $('#IdCadenaAgregar').val();
-    var Sucursal = $('#Sucursal').val();
-    var InicioContrato = $('#InicioContrato').val();
-    var Activo = $('#ActivoAgregar').is(':checked');
+    function prepararModal(accion) {
+        $('#modalTitle').text(accion === 'agregar' ? 'Agregar Cliente' : 'Actualizar Cliente');
+        $('#btnGuardar').text(accion === 'agregar' ? 'Agregar' : 'Actualizar');
+        if (accion === 'agregar'){
+            $('#IdCliente').val('0');
+        }
+        $('#formCliente')[0].reset();
+        $('#img').attr('src', "https://www.ciitaveracruz.ipn.mx/assets/files/ciitaveracruz/img/Contacto/img-contacto-telefonico.png");
+        imagenBase64 = null;
 
-    var camposVacios = [];
-
-    if (!No_Cliente || No_Cliente === "0") camposVacios.push("No Cliente Vacio");
-    if (!IdCadena) camposVacios.push("Id Cadena");
-    if (!Sucursal) camposVacios.push("Sucursal");
-    if (!InicioContrato) camposVacios.push("Inicio de Contrato");
-    if (!imagenBase64) camposVacios.push("Imagen no seleccionada");
-
-    if (camposVacios.length > 0) {
-        Swal.fire({
-            title: "Faltan datos",
-            text: "Por favor completa los siguientes campos: " + camposVacios.join(", "),
-            icon: "warning"
-        });
-        return;
     }
 
-    Swal.fire({
-        title: "¿Deseas agregar un nuevo registro?",
-        showCancelButton: true,
-        confirmButtonText: "Guardar",
-        cancelButtonText: "Cerrar"
-    }).then((result) => {
-        if (result.isConfirmed) {
-            $.ajax({
-                url: '@Url.Action("Add", "Clientes")',
-                dataType: 'json',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({
-                    No_Cliente: No_Cliente,
-                    Cadena: { IdCadena: IdCadena },
-                    Sucursal: Sucursal,
-                    InicioContrato: InicioContrato,
-                    Activo: Activo,
-                    ImagenBase64: imagenBase64,
-                }),
-                success: function (result) {
-                    if (result.Success) {
-                        Swal.fire("Agregado!", "", "success").then(() => {
-                            limpiarCampos();
-                            location.reload();
-                        });
-                    } else {
-                        alert('Ocurrió un error: ' + result.errorMessage);
-                    }
-                },
-                error: function (xhr, status, error) {
-                    alert('Ocurrió un error en la solicitud: ' + error);
+        function Guardar() {
+            var IdCliente = $('#IdCliente').val();
+            var No_Cliente = $('#No_Cliente').val();
+            var IdCadena = $('#IdCadena').val();
+            var Sucursal = $('#Sucursal').val();
+            var InicioContrato = $('#InicioContrato').val();
+            var Activo = $('#Activo').is(':checked');
+
+            if (!No_Cliente || !IdCadena || !Sucursal || !InicioContrato || !imagenBase64) {
+                Swal.fire({
+                    title: "Faltan datos",
+                    text: "Por favor completa todos los campos y selecciona una imagen.",
+                    icon: "warning"
+                });
+                return;
+            }
+
+            const actionUrl = IdCliente == 0 ? '@Url.Action("Add", "Clientes")' : '@Url.Action("Update", "Clientes")';
+
+            Swal.fire({
+                title: "¿Deseas guardar los cambios?",
+                showCancelButton: true,
+                confirmButtonText: "Guardar",
+                cancelButtonText: "Cerrar"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: actionUrl,
+                        dataType: 'json',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({
+                            IdCliente: IdCliente,
+                            No_Cliente: No_Cliente,
+                            Cadena: { IdCadena: IdCadena },
+                            Sucursal: Sucursal,
+                            InicioContrato: InicioContrato,
+                            Activo: Activo,
+                            ImagenBase64: imagenBase64,
+                        }),
+                        success: function (result) {
+                            if (result.Success) {
+                                Swal.fire("¡Éxito!", "Los datos han sido guardados.", "success").then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire("Error", result.ErrorMessage, "error");
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            Swal.fire("Error", "Ocurrió un error en la solicitud: " + error, "error");
+                        }
+                    });
                 }
             });
         }
-    });
-}
-function limpiarCampos() {
-    $('#No_Cliente').val('');
-    $('#IdCadenaAgregar').val('');
-    $('#Sucursal').val('');
-    $('#InicioContrato').val('');
-    $('#ActivoAgregar').prop('checked', false);
-}
 
+        function limpiarCampos() {
+            $('#IdCliente').val('');
+            $('#No_Cliente').val('');
+            $('#IdCadena').val('');
+            $('#Sucursal').val('');
+            $('#InicioContrato').val('');
+            $('#Activo').prop('checked', false);
+            $('#Inactivo').prop('checked', false);
+            $('#img').attr('src', 'https://www.ciitaveracruz.ipn.mx/assets/files/ciitaveracruz/img/Contacto/img-contacto-telefonico.png');
+            imagenBase64 = null;
+        }
 
-function Actualizar() {
-    var IdCliente = $('#IdCliente').val();
-    var No_Cliente = $('#No_ClienteActualizar').val();
-    var IdCadena = $('#IdCadenaActualizar').val();
-    var Sucursal = $('#SucursalActualizar').val();
-    var InicioContrato = $('#InicioContratoActualizar').val();
-    var Activo = $('#ActivoActualizar').is(':checked');
-
-    if (!imagenBase64) {
-        Swal.fire({
-            title: "Error",
-            text: "Debes seleccionar una imagen.",
-            icon: "error"
-        });
-        return;
-    }
-
-    $.ajax({
-        url: '@Url.Action("Update", "Clientes")',
-        dataType: 'json',
-        type: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify({
-            IdCliente: IdCliente,
-            No_Cliente: No_Cliente,
-            Cadena: { IdCadena: IdCadena },
-            Sucursal: Sucursal,
-            InicioContrato: InicioContrato,
-            Activo: Activo,
-            ImagenBase64: imagenBase64,
-        }),
-        success: function (result) {
-            if (result.Success) {
-                Swal.fire({
-                    title: "Actualizado",
-                    text: "Los datos se han actualizado con éxito.",
-                    icon: "success"
-                }).then(() => {
-                    location.reload();
-                });
-            } else {
-                Swal.fire({
-                    title: "Error",
-                    text: 'Ocurrió un error: ' + result.errorMessage,
-                    icon: "error"
-                });
+        function convertToBase64(fileInput) {
+            const file = fileInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onloadend = function () {
+                    imagenBase64 = reader.result.split(',')[1];
+                };
+                reader.readAsDataURL(file);
             }
-        },
-        error: function (xhr, status, error) {
-            Swal.fire({
-                title: "Error en la solicitud",
-                text: 'Ocurrió un error: ' + error,
-                icon: "error"
-            });
         }
-    });
-}
 
-    function convertToBase64(fileInput) {
-        const file = fileInput.files[0];
-
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = function () {
-                imagenBase64 = reader.result.split(',')[1];
-            };
-            reader.readAsDataURL(file);
-        }
-    }
-
-
-
-function validarImagen(input) {
-    if (input.files && input.files[0]) {
-        const file = input.files[0];
-        if (!['image/jpeg', 'image/jpg', 'image/png'].includes(file.type)) {
-            Swal.fire({
-                title: "Error",
-                text: "Solo se aceptan archivos 'jpeg', 'jpg', 'png'.",
-                icon: "error"
-            });
-            input.value = '';
-            return false;
-        }
-    }
-    return true;
-}
-
-   function visualizarImagen(input) {
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                $('#img').attr('src', e.target.result);
+        function visualizarImagen(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#img').attr('src', e.target.result);
+                }
+                reader.readAsDataURL(input.files[0]);
             }
-            reader.readAsDataURL(input.files[0]);
         }
-    }
-
-
     function obtenerCliente(idCliente) {
         $.ajax({
             url: '@Url.Action("GetClienteById", "Clientes")',
@@ -384,14 +271,22 @@ function validarImagen(input) {
             data: { idCliente: idCliente },
             success: function(result) {
                 if (result.Success) {
-                    $('#No_ClienteActualizar').val(result.Object.No_Cliente);
-                    $('#SucursalActualizar').val(result.Object.Sucursal);
-                    $('#InicioContratoActualizar').val(result.Object.InicioContrato);
-                    $('#IdCadenaActualizar').val(result.Object.Cadena.IdCadena);
-                    $('#ActivoActualizar').prop('checked', result.Object.Activo);
-                    $('#InactivoActualizar').prop('checked', !result.Object.Activo);
+                    $('#No_Cliente').val(result.Object.No_Cliente);
+                    $('#Sucursal').val(result.Object.Sucursal);
+                    $('#InicioContrato').val(result.Object.InicioContrato);
+                    $('#IdCadena').val(result.Object.Cadena.IdCadena);
+                    $('#Activo').prop('checked', result.Object.Activo);
+                    $('#Inactivo').prop('checked', !result.Object.Activo);
                     $('#IdCliente').val(result.Object.IdCliente);
-                    $('#modalActualizar').modal('show');
+
+                    if (result.Object.ImagenBase64) {
+                        $('#img').attr('src', 'data:image/png;base64,' + result.Object.ImagenBase64);
+                        imagenBase64 = result.Object.ImagenBase64;
+                    } else {
+                        $('#img').attr('src', 'https://www.ciitaveracruz.ipn.mx/assets/files/ciitaveracruz/img/Contacto/img-contacto-telefonico.png');
+                    }
+
+                    $('#modalCliente').modal('show');
                 } else {
                     alert('No se encontraron datos para el cliente.');
                 }
@@ -403,47 +298,60 @@ function validarImagen(input) {
     }
 
 
-    function Eliminar(idCliente) {
-    Swal.fire({
-        title: '¿Deseas eliminar el cliente?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'No, cancelar'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            $.ajax({
-                url: '@Url.Action("DeleteEF", "Clientes")',
-                type: 'POST',
-                dataType: 'json',
-                data: { idCliente: idCliente },
-                success: function(result) {
-                    if (result.Success) {
-                        Swal.fire({
-                            title: '¡Se eliminó correctamente!',
-                            text: 'Da click al botón!',
-                            icon: 'success'
-                        }).then(() => {
-                            location.reload();
-                        });
-                    } else {
-                        Swal.fire({
-                            title: 'Ocurrió un error',
-                            text: result.ErrorMessage,
-                            icon: 'error'
-                        });
-                    }
-                },
-                error: function(xhr, status, error) {
-                    Swal.fire({
-                        title: 'Ocurrió un error en la solicitud',
-                        text: error,
-                        icon: 'error'
+
+        function Eliminar(idCliente) {
+            Swal.fire({
+                title: '¿Deseas eliminar el cliente?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'No, cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '@Url.Action("DeleteEF", "Clientes")',
+                        type: 'POST',
+                        dataType: 'json',
+                        data: { idCliente: idCliente },
+                        success: function(result) {
+                            if (result.Success) {
+                                Swal.fire('¡Se eliminó correctamente!', '', 'success').then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire('Ocurrió un error', result.ErrorMessage, 'error');
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            Swal.fire('Ocurrió un error en la solicitud', error, 'error');
+                        }
                     });
                 }
             });
         }
-    });
-}
+
+
+        function ChangeStatus(i, IdCliente) {
+        var newStatus = i.checked;
+        console.log("Changing status for IdCliente: " + IdCliente + ", Activo: " + newStatus);
+
+        $.ajax({
+            url: '@Url.Action("ChangeStatus", "Clientes")',
+            datatype: 'json',
+            type: 'POST',
+            data: { Activo: newStatus, IdCliente: IdCliente },
+            success: function (result) {
+                if (result.Success) {
+                    Swal.fire('Éxito', 'Estado actualizado correctamente.', 'success');
+                } else {
+                    Swal.fire('Error', result.ErrorMessage, 'error');
+                }
+            },
+            error: function (xhr, status, error) {
+                alert('Ocurrió un error: ' + error);
+            }
+        });
+    }
 
 </script>
+
