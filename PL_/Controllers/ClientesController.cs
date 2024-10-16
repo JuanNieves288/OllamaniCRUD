@@ -1,5 +1,6 @@
 ﻿using DevExpress.DataProcessing.InMemoryDataProcessor.GraphGenerator;
 using ML;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -30,6 +31,17 @@ namespace PL_.Controllers
             return View(clientes);
         }
 
+        [HttpGet]
+        public JsonResult GetAllDevExpress()
+        {
+            ML.Result result = BL.Clientes.GetAllEF();
+            if (result.Success)
+            {
+                return Json(result.Objects, JsonRequestBehavior.AllowGet);
+            }
+            return Json(new List<ML.Cliente>(), JsonRequestBehavior.AllowGet);
+        }
+
 
         [HttpPost]
         public JsonResult Add(ML.Cliente cliente)
@@ -41,6 +53,22 @@ namespace PL_.Controllers
             }
             ML.Result result = BL.Clientes.AddLINQ(cliente);
             return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+
+        [HttpPost]
+        public JsonResult AddDevExpress(string values)
+        {
+            var clienteNuevo = JsonConvert.DeserializeObject<ML.Cliente>(values);
+            ML.Result result = BL.Clientes.AddEFs(clienteNuevo);
+            if(result.Success)
+            {
+                return Json(clienteNuevo);
+            }
+            else
+            {
+                return null;
+            }
         }
 
         [HttpPost]
@@ -57,12 +85,69 @@ namespace PL_.Controllers
         }
 
 
+
+        [HttpPut]
+        public JsonResult UpdateDevExpress(string key, string values)
+        {
+            ML.Cliente clienteActualizado = JsonConvert.DeserializeObject<ML.Cliente>(values);
+            clienteActualizado.IdCliente = int.Parse(key);
+            ML.Result resultdatos = BL.Clientes.GetById(int.Parse(key));
+
+            if (resultdatos != null )
+            {
+                if (!string.IsNullOrEmpty(clienteActualizado.Sucursal))
+                {
+                    resultdatos.Object = clienteActualizado.Sucursal;
+                }
+
+                if (clienteActualizado.Cadena.IdCadena > 0)
+                {
+                    resultdatos.Object = clienteActualizado.Cadena.IdCadena;
+                }
+
+                if (!string.IsNullOrEmpty(clienteActualizado.InicioContrato))
+                {
+                    resultdatos.Object = clienteActualizado.InicioContrato;
+                }
+
+                resultdatos.Object = clienteActualizado.Activo;
+
+                if (clienteActualizado.No_Cliente > 0)
+                {
+                    resultdatos.Object = clienteActualizado.No_Cliente;
+                }
+
+                ML.Result result = BL.Clientes.UpdateEF(clienteActualizado);
+                return Json(new { success = result.Success });
+            }
+
+            return Json(new { success = false, message = "Cliente no encontrado" });
+        }
+
+
+
         [HttpPost]
         public JsonResult DeleteEF(int IdCliente)
         {
-            ML.Result result = BL.Clientes.DeleteEF(IdCliente);
+            ML.Result result = BL.Clientes.Delete(IdCliente);
             return Json(result, JsonRequestBehavior.AllowGet);
         }
+
+        [HttpDelete]
+        public JsonResult DeleteDevExpress(string key)
+        {
+            int id = int.Parse(key);
+            ML.Result result = BL.Clientes.Delete(id);
+            if (result.Success)
+            {
+                return Json(new { success = true });
+            }
+            else
+            {
+                return Json(new { success = false, message = result.Exception?.Message ?? "Error al eliminar el cliente." });
+            }
+        }
+
 
 
         [HttpGet]

@@ -11,7 +11,7 @@ namespace ML
     public class Cliente
     {
         public int IdCliente { get; set; }
-        [Display(Name = "Id del Cliente")]
+        [Display(Name = "Numero del Cliente")]
         public int No_Cliente { get; set; }
         public string Nombre { get; set; }
         public string Sucursal { get; set; }

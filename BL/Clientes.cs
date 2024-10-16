@@ -133,8 +133,16 @@ namespace BL
                         cmd.Parameters.AddWithValue("@IdCliente", cliente.IdCliente);
                         cmd.Parameters.AddWithValue("@IdCadena", cliente.Cadena.IdCadena);
                         cmd.Parameters.AddWithValue("@Sucursal", cliente.Sucursal);
-                        DateTime fecha = DateTime.ParseExact(cliente.InicioContrato, "dd/MM/yyyy", CultureInfo.InvariantCulture);
-                        cmd.Parameters.AddWithValue("@InicioContrato", fecha.Date);
+                        if (string.IsNullOrEmpty(cliente.InicioContrato))
+                        {
+                            cmd.Parameters.AddWithValue("@InicioContrato", DBNull.Value); 
+                        }
+                        else
+                        {
+                            DateTime fecha = DateTime.ParseExact(cliente.InicioContrato, "dd/MM/yyyy", CultureInfo.InvariantCulture);
+                            cmd.Parameters.AddWithValue("@InicioContrato", fecha.Date);
+                        }
+
                         cmd.Parameters.AddWithValue("@Activo", cliente.Activo);
                         cmd.Parameters.AddWithValue("@FechaActualizacion", DateTime.Now);
                         cmd.Parameters.AddWithValue("@Imagen", (object)cliente.Imagen ?? DBNull.Value);
@@ -181,7 +189,7 @@ namespace BL
                 result.Success = false;
             }
             return result;
-        }
+        }   
 
         public static ML.Result GetById(int IdCliente)
         {
